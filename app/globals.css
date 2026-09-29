@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-slide-up: slide-up 0.9s ease-out both;
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
