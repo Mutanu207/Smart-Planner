@@ -6,6 +6,7 @@ export const api = axios.create({
 });
 
 interface RegisterUserData {
+  name: string;
   email: string;
   password: string;
 }
