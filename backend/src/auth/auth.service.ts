@@ -8,11 +8,13 @@ import bcrypt from 'bcrypt';
 import { AuthModel } from './auth.model.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import { TokenService } from './token.service.js';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authModel: AuthModel,
+    private readonly tokenService: TokenService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<void> {
@@ -71,11 +73,17 @@ export class AuthService {
         'Invalid email or password',
       );
     }
+     const accessToken=
+      await this.tokenService.generateAccessToken(user.id,user.email);
 
     return {
+      accessToken,
+      user:{
       id: user.id,
       email: user.email,
       name: user.name,
+      }
+      
     };
   }
 }

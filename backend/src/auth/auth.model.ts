@@ -26,7 +26,7 @@ export class AuthModel {
     email: string,
   ): Promise<UserRecord | undefined> {
     const result = await this.databaseService.query(
-      `SELECT email, name , password
+      `SELECT email, name , password, id
        FROM users
        WHERE email = $1
        LIMIT 1`,

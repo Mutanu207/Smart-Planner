@@ -28,11 +28,11 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.login(loginDto);
+    const userDetails = await this.authService.login(loginDto);
 
     return {
       message: 'User logged in successfully',
-      user,
+      userDetails,
     };
   }
 }
