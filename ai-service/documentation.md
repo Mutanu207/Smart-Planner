@@ -1,0 +1,1 @@
+This is the ai-service folder that holds the fast api python server for AI.

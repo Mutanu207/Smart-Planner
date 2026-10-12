@@ -10,7 +10,7 @@ export default function Home() {
         </h1> 
 
         <p className={`animate-slide-up delay-400 mt-6 text-lg text-slate-300 sm:text-xl ${dmSans.className}`}>
-          A smarter daily planner that learns how you work and helps you build
+          A smarter planner that learns how you work and helps you build
           a realistic schedule around your energy, tasks, and calendar.
         </p>
 
