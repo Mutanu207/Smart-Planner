@@ -35,5 +35,10 @@ export class TokenService {
       },
     );
   }
+  async verifyRefreshToken(refreshToken:string){
+    return this.jwtService.verifyAsync<{sub:number}>(refreshToken,{
+      secret:process.env.JWT_REFRESH_SECRET,
+    })
+  }
 }
 

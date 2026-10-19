@@ -18,6 +18,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<void> {
+    try {
     const { email, password, name } = registerDto;
 
     if (
@@ -41,7 +42,6 @@ export class AuthService {
         'An account with this email already exists',
       );
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await this.authModel.createUser(
@@ -50,8 +50,13 @@ export class AuthService {
       normalizedName,
     );
   }
+  catch (error) {
+      throw error;
+    } }
+
 
   async login(loginDto: LoginDto) {
+    try {
     const { email, password } = loginDto;
 
     if (!email?.trim() || !password) {
@@ -86,5 +91,29 @@ export class AuthService {
       }
       
     };
+    }
+    catch (error) {
+      throw error;
+    } }
+    async refreshAccessToken(refreshToken:string){
+      let payload:{sub:number};
+      try{
+        payload=await this.tokenService.verifyRefreshToken(refreshToken);
+      }
+      catch(error){
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      //second process 
+      try{
+        const user= await this.authModel.fetchUserById(payload.sub);
+        if(!user){
+          throw new UnauthorizedException('User not found');
+        }
+        const accessToken= await this.tokenService.generateAccessToken(user.id,user.email);
+        return {
+          accessToken}}
+      catch(error){
+        throw error;
+    }
   }
 }

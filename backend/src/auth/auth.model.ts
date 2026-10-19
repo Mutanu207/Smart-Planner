@@ -15,7 +15,10 @@ export interface CreatedUser {
   name: string;
   created_at: Date;
 }
-
+ export interface fetchUserById {
+  id: number;
+  email: string;
+}
 @Injectable()
 export class AuthModel {
   constructor(
@@ -25,6 +28,7 @@ export class AuthModel {
   async findUserByEmail(
     email: string,
   ): Promise<UserRecord | undefined> {
+    try {
     const result = await this.databaseService.query(
       `SELECT email, name , password, id
        FROM users
@@ -35,12 +39,17 @@ export class AuthModel {
 
     return result.rows[0] as UserRecord | undefined;
   }
+      catch (error) {
+        throw error;
+      }}
+  
 
   async createUser(
     email: string,
     hashedPassword: string,
     name: string,
   ): Promise<CreatedUser> {
+    try{
     const result = await this.databaseService.query(
       `INSERT INTO users (email, password, name)
        VALUES ($1, $2, $3)`,
@@ -49,4 +58,24 @@ export class AuthModel {
 
     return result.rows[0] as CreatedUser;
   }
+  catch (error) {
+    throw error;
+  }
 }
+ async fetchUserById(id: number): Promise<fetchUserById | undefined> {
+  try {
+    const result = await this.databaseService.query(
+      `SELECT id, email
+       FROM users
+       WHERE id = $1
+       LIMIT 1`,
+      [id],
+    );
+
+    return result.rows[0] as fetchUserById | undefined;
+  }
+  catch (error) {
+    throw error;
+  }
+}
+ }
