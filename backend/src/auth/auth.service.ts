@@ -10,6 +10,12 @@ import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { TokenService } from './token.service.js';
 
+type GoogleUserData = {
+  google_id: string;
+  email: string;
+  username: string;
+}; 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -116,4 +122,30 @@ export class AuthService {
         throw error;
     }
   }
+  async googleService({google_id,email,username}: GoogleUserData){
+    try{
+
+      const existinguser = await this.authModel.findUserByGoogleId(google_id)
+      if (existinguser){
+         const refreshToken= await this.tokenService.generateRefreshToken(existinguser.id)
+        return refreshToken
+      }
+      const localUser= await this.authModel.findUserByEmail(email)
+      if (localUser){
+        const updatedLocalUser= await this.authModel.updateLocalUser(google_id,email,username)
+        if(!updatedLocalUser){throw new UnauthorizedException('User not found');}
+        const refreshToken = await this.tokenService.generateRefreshToken(updatedLocalUser.id)
+        return refreshToken
+      }
+      const newGoogleUser= await this.authModel.createGoogleUser(google_id,email,username)
+      if(!newGoogleUser){throw new UnauthorizedException('User not found');}
+      const refreshToken= await this.tokenService.generateRefreshToken(newGoogleUser.id)
+      return refreshToken
+    }
+    catch(error){
+        throw error;
+    }
+  }
+  
+  
 }

@@ -5,6 +5,7 @@ import { AuthModel } from './auth.model.js';
 import { JwtModule} from '@nestjs/jwt'
 import { TokenService } from './token.service.js';
 import { AuthMiddleware } from './auth.middleware.js';
+import { GoogleStrategy } from './google.strategy.js';
 @Module({
   imports: [
     JwtModule.register({
@@ -15,6 +16,6 @@ import { AuthMiddleware } from './auth.middleware.js';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthModel, TokenService, AuthMiddleware],
+  providers: [AuthService, AuthModel, TokenService, AuthMiddleware,GoogleStrategy],
 })
 export class AuthModule {}

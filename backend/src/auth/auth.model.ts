@@ -19,6 +19,15 @@ export interface CreatedUser {
   id: number;
   email: string;
 }
+export interface existingGoogleUser {
+  id:number;
+}
+export interface updatedUser{
+  id:number;
+}
+export interface newGoogleUser {
+  id:number;
+}
 @Injectable()
 export class AuthModel {
   constructor(
@@ -78,4 +87,57 @@ export class AuthModel {
     throw error;
   }
 }
+async findUserByGoogleId(google_id:string):Promise <existingGoogleUser | undefined >{
+  try{
+    const result= await this.databaseService.query(
+      `SELECT id
+       FROM users
+       WHERE google_id = $1
+       LIMIT 1`,
+      [google_id],
+    );
+    return result.rows[0] as existingGoogleUser | undefined
+} catch (error) {
+    throw error;
+  }
+}
+
+async updateLocalUser(
+  google_id: string,
+  email: string,
+  username: string,
+): Promise<updatedUser | undefined> {
+  try {
+    const result = await this.databaseService.query(
+      `UPDATE users
+       SET google_id = $1,
+           name = $2
+       WHERE email = $3
+       RETURNING id`,
+      [google_id, username, email],
+    );
+
+    return result.rows[0] as updatedUser | undefined;
+  } catch (error) {
+    throw error;
+  }
+}
+ async createGoogleUser(
+     google_id: string,
+      email: string,
+     username: string,
+ ) : Promise < newGoogleUser | undefined >{
+  try{
+    const result = await this.databaseService.query(
+      ` INSERT INTO users(google_id,email,name)
+      VALUES($1,$2,$3)
+      RETURNING id`,
+      [google_id,email,username]
+    )
+    return result.rows[0] as newGoogleUser | undefined
+  }
+  catch (error) {
+    throw error;
+  }
+ }
  }
