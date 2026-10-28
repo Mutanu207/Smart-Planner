@@ -3,7 +3,6 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   Post,
   Req,
   Res,
@@ -34,23 +33,15 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    try {
     await this.authService.register(registerDto);
 
     return {
       message: 'Registration successful. Please log in.',
-    };
-    }
-        catch (error) {
-          throw new InternalServerErrorException('An error occurred during registration. Please try again later.');
-        }
-    
-  }
+    };}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response,) {
-    try {
     const userDetails = await this.authService.login(loginDto);
     const {accessToken, refreshToken,user} = userDetails;
     res.cookie('refreshToken', refreshToken, {
@@ -64,28 +55,20 @@ export class AuthController {
       message: 'User logged in successfully',
       user,
       accessToken,
-    };
-  }
-  catch (error) {
-    throw new InternalServerErrorException('An error occurred during login. Please try again later.');
-  }}
+    };}
+
 @Post('logout')
 async logout(@Res({ passthrough: true }) res: Response) {
-  try {
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+       path: '/',
 })
 return({
   message: 'User logged out successfully',
-});
-  }
-  catch (error) {
-    console.error('Error during logout:', error);
-  throw new InternalServerErrorException('An error occurred during logout. Please try again later.');
-  }
-}
+});}
+
 @Post('refresh-token')
 @HttpCode(HttpStatus.OK)
 async refreshAccessToken(@Req() req: Request) {
@@ -105,7 +88,6 @@ googleLogin() {};
 @Get('google/callback')
 @UseGuards(GoogleAuthGuard)
  async googleLoginRedirect(@Req() req:Request, @Res({ passthrough: true }) res: Response) {
-  try{
   const googleUser= req.user as GoogleProfile | undefined
   if (!googleUser)
   {
@@ -125,9 +107,4 @@ googleLogin() {};
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
     return {
-      message: 'User logged in successfully'}}
-  catch (error) {
-    console.error('Error during logout:', error);
-  throw new InternalServerErrorException('An error occurred. Please try again later.');
-  }
-}}
+      message: 'User logged in successfully'}}}

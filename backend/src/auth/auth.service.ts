@@ -24,7 +24,6 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<void> {
-    try {
     const { email, password, name } = registerDto;
 
     if (
@@ -55,14 +54,10 @@ export class AuthService {
       hashedPassword,
       normalizedName,
     );
-  }
-  catch (error) {
-      throw error;
-    } }
+   }
 
 
   async login(loginDto: LoginDto) {
-    try {
     const { email, password } = loginDto;
 
     if (!email?.trim() || !password) {
@@ -96,11 +91,8 @@ export class AuthService {
       name: user.name,
       }
       
-    };
-    }
-    catch (error) {
-      throw error;
-    } }
+    };}
+
     async refreshAccessToken(refreshToken:string){
       let payload:{sub:number};
       try{
@@ -109,8 +101,6 @@ export class AuthService {
       catch(error){
         throw new UnauthorizedException('Invalid refresh token');
       }
-      //second process 
-      try{
         const user= await this.authModel.fetchUserById(payload.sub);
         if(!user){
           throw new UnauthorizedException('User not found');
@@ -118,14 +108,9 @@ export class AuthService {
         const accessToken= await this.tokenService.generateAccessToken(user.id,user.email);
         return {
           accessToken}}
-      catch(error){
-        throw error;
-    }
-  }
-  async googleService({google_id,email,username}: GoogleUserData){
-    try{
 
-      const existinguser = await this.authModel.findUserByGoogleId(google_id)
+    async googleService({google_id,email,username}: GoogleUserData){
+    const existinguser = await this.authModel.findUserByGoogleId(google_id)
       if (existinguser){
          const refreshToken= await this.tokenService.generateRefreshToken(existinguser.id)
         return refreshToken
@@ -133,19 +118,11 @@ export class AuthService {
       const localUser= await this.authModel.findUserByEmail(email)
       if (localUser){
         const updatedLocalUser= await this.authModel.updateLocalUser(google_id,email,username)
-        if(!updatedLocalUser){throw new UnauthorizedException('User not found');}
+        if(!updatedLocalUser){throw new UnauthorizedException('Unable to link your Google account');}
         const refreshToken = await this.tokenService.generateRefreshToken(updatedLocalUser.id)
         return refreshToken
       }
       const newGoogleUser= await this.authModel.createGoogleUser(google_id,email,username)
-      if(!newGoogleUser){throw new UnauthorizedException('User not found');}
+      if(!newGoogleUser){throw new UnauthorizedException('Unable to link your Google account');}
       const refreshToken= await this.tokenService.generateRefreshToken(newGoogleUser.id)
-      return refreshToken
-    }
-    catch(error){
-        throw error;
-    }
-  }
-  
-  
-}
+      return refreshToken}}
