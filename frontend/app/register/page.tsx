@@ -6,17 +6,42 @@ import Image from "next/image"
 import { useState } from "react"
 import { registerUser } from "@/lib/api"
 import { googleAuthURL } from "@/lib/api"
+import { useNotification } from "@/context/NotificationProvider"
+import axios from "axios"
+import { useRouter } from 'next/navigation'
+import { validateRegister } from "@/lib/auth/authValidation"
 function Home () {
     const [user,setUser] = useState({
         name:"",
         email: "",
         password: ""
     })
-
+    const { notify }= useNotification();
+    const router = useRouter()
     const handleRegister = async ()=>{
+        try{
+        const validationError = validateRegister(user)
+        if (validationError) {
+            notify(validationError, "error");
+            return 
+        }
         const response = await registerUser(user)
-        console.log(response)
-    }    
+        const{message}= response
+        notify(message ?? "Registration successful!", "success")
+        router.replace("/login")
+    } 
+        catch (error) {
+        const message = axios.isAxiosError(error)
+            ? error.response?.data?.message
+            : undefined;
+
+        notify(
+            Array.isArray(message)
+            ? message.join(", ")
+            : message ?? "Login failed. Please try again.",
+            "error",
+        );
+        }}    
     const handleGoogleLogin = ()=>{
     window.location.href=googleAuthURL }
 

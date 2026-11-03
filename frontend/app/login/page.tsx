@@ -7,18 +7,48 @@ import Image from "next/image"
 import { useState } from "react"
 import { loginUser } from "@/lib/api"
 import { googleAuthURL } from "@/lib/api"
+import {useAuth} from "@/context/AuthProvider"
+import {useNotification} from "@/context/NotificationProvider"
+import axios from "axios"
+import { useRouter } from 'next/navigation'
+import {validateLogin} from "@/lib/auth/authValidation"
 function Home () {
-    const [user, setUser]= useState ({
+    const [userDetails, setUserDetails]= useState ({
         email: "",
         password: ""
     })
+    const router = useRouter()
+    const{setAccessToken}= useAuth();
+    const {notify} = useNotification();
     const handleLogin = async ()=>{
-        const response= await loginUser(user)
+        try{
+        const validationError = validateLogin(userDetails)
+        if (validationError) {
+        notify(validationError, "error");
+        return 
+                }
+        const response= await loginUser(userDetails)
         console.log(response)
-    }
+        const {accessToken,message,user}= response
+        setAccessToken(accessToken)
+        notify(message ?? "Login successful!", "success")
+        router.replace("/dashboard")}
+    catch (error) {
+    const message = axios.isAxiosError(error)
+        ? error.response?.data?.message
+        : undefined;
+
+    notify(
+        Array.isArray(message)
+        ? message.join(", ")
+        : message ?? "Login failed. Please try again.",
+        "error",
+    );
+    }}
+
       const handleGoogleLogin = ()=>{
         window.location.href=googleAuthURL }
-
+   
 return(
     <main className=" min-h-screen flex items-center justify-center flex-col bg-[#F8F9FA]">
         <div className="w-full max-w-md rounded-3xl shadow-2xl p-10 text-black ">
@@ -38,8 +68,8 @@ return(
                 <input
                     type="email"
                     placeholder="Enter your email"
-                    value={user.email}
-                    onChange={(event)=> {setUser(prevValue=>({...prevValue,email:event.target.value}))}}
+                    value={userDetails.email}
+                    onChange={(event)=> {setUserDetails(prevValue=>({...prevValue,email:event.target.value}))}}
                     className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500"
                 />
             </div>
@@ -49,8 +79,8 @@ return(
                 <input 
                 type= "password"
                 placeholder="Enter your password"
-                value={user.password}
-                onChange={(event) => {setUser(prevValue=> ({...prevValue, password: event.target.value}))}}
+                value={userDetails.password}
+                onChange={(event) => {setUserDetails(prevValue=> ({...prevValue, password: event.target.value}))}}
                 className="mt-2 mb-6 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500"/> </div>
             
             <div className="flex flex-col ">
