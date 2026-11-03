@@ -106,5 +106,7 @@ googleLogin() {};
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
+    res.redirect(
+  `${process.env.FRONTEND_URL}/auth-success`,);
     return {
       message: 'User logged in successfully'}}}
