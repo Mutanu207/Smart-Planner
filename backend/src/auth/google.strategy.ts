@@ -6,13 +6,13 @@ import { Strategy, Profile } from 'passport-google-oauth20';
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly configService: ConfigService) {
-    super({
-      clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
-      clientSecret: configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
-      callbackURL: configService.getOrThrow<string>('GOOGLE_REDIRECT_URI'),
-      scope: ['email', 'profile'],
-    });
-  }
+  super({
+    clientID:configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+    clientSecret:configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
+    callbackURL:configService.getOrThrow<string>('GOOGLE_REDIRECT_URI'),
+    scope: ['email', 'profile'],
+  });
+}
 
   validate(
     accessToken: string,
