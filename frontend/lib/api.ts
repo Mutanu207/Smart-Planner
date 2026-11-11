@@ -11,6 +11,13 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+const authEndpoints = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/refresh-token",
+];
+
+
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -35,9 +42,8 @@ api.interceptors.response.use(
     }
 
     // Don't try to refresh the refresh-token request itself.
-    if (originalRequest.url?.includes("/auth/refresh-token")) {
-      clearAccessToken();
-      return Promise.reject(error);
+   if (authEndpoints.includes(originalRequest.url ?? "")) {
+    return Promise.reject(error);
     }
 
     // Only retry an unauthorized request once.

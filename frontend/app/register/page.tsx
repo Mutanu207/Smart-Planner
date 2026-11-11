@@ -10,12 +10,14 @@ import { useNotification } from "@/context/NotificationProvider"
 import axios from "axios"
 import { useRouter } from 'next/navigation'
 import { validateRegister } from "@/lib/auth/authValidation"
+import { Eye, EyeOff } from "lucide-react";
 function Home () {
     const [user,setUser] = useState({
         name:"",
         email: "",
         password: ""
     })
+    const [showPassword, setShowPassword] = useState(false); //true show paswsword and false hide password
     const { notify }= useNotification();
     const router = useRouter()
     const handleRegister = async ()=>{
@@ -81,16 +83,36 @@ return(
                     className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500"
                 />
             </div>
-            <div className="mt-6">
-                <label className={`block text-sm font-medium  ${dmSans.className}`}>
-                    Password</label>
-                <input 
-                type= "password"
-                placeholder="Enter your password"
-                value= {user.password}
-                onChange={(event) => {setUser(prevValue=>({...prevValue, password:event.target.value}))}}
-                className="mt-2 mb-6 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-indigo-500"/> </div>
-            
+                 <div className="mt-6">
+                <label className={`block text-sm font-medium ${dmSans.className}`}>
+                    Password
+                </label>
+
+                {/* Wrapper for input and visibility button */}
+                <div className="relative mt-2 mb-6">
+
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        placeholder="Enter your password"
+                        value={user.password}
+                        onChange={(event) => {
+                            setUser(prevValue => ({
+                                ...prevValue,
+                                password: event.target.value
+                            }));
+                        }}
+                        className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 outline-none focus:border-indigo-500"
+                    />
+
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button></div> </div>           
             <div className="flex flex-col ">
             <PrimaryButton size= "large" background="#020618" color="#ffffff" onClick={handleRegister} > Sign up </PrimaryButton>
             </div>

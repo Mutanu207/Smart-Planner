@@ -8,19 +8,19 @@ import {
 } from "react";
 import { Alert, Snackbar } from "@mui/material";
 
-type NotificationSeverity = "success" | "error" | "info" | "warning";
+type NotificationSeverity = "success" | "error" | "info" | "warning"; //  the severity levels for the notification
 
 type NotificationContextType = {
-  notify: (message: string, severity?: NotificationSeverity) => void;
+  notify: (message: string, severity?: NotificationSeverity) => void; // the function to trigger a notification, this is its type definition  
 };
 
 const NotificationContext =
-  createContext<NotificationContextType | undefined>(undefined);
+  createContext<NotificationContextType | undefined>(undefined);// creating a context for notifications, initially undefined
 
 export function NotificationProvider({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode; // the children components that will have access to the notification context, the children prop is of type ReactNode, which can be any valid React child (elements, strings, numbers, etc.)
 }) {
   const [message, setMessage] = useState("");
   const [severity, setSeverity] =

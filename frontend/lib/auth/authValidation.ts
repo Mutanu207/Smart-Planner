@@ -49,6 +49,9 @@ export const validateRegister = (user:user) => {
         return "Password must contain at least one special character";
     }
 
+    if(!user.name.trim()){
+        return "Name is required";
+    }
     return null
 };
 
