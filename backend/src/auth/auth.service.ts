@@ -68,17 +68,24 @@ export class AuthService {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const user =
-      await this.authModel.findUserByEmail(normalizedEmail);
+    const user =await this.authModel.findUserByEmail(normalizedEmail);
+//fetch user from db, if user isnt there send error, if user password is empty send error, if password is incorrect send error
+      if (!user || !user.password) {
+        throw new UnauthorizedException(
+          'Invalid email or password',
+        );
+      }
 
-    if (
-      !user ||
-      !(await bcrypt.compare(password, user.password))
-    ) {
-      throw new UnauthorizedException(
-        'Invalid email or password',
+      const isMatch = await bcrypt.compare(
+        password,
+        user.password,
       );
-    }
+
+      if (!isMatch) {
+        throw new UnauthorizedException(
+          'Invalid email or password',
+        );
+      }
      const accessToken=
       await this.tokenService.generateAccessToken(user.id,user.email);
       const refreshToken= await this.tokenService.generateRefreshToken(user.id);

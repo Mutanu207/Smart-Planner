@@ -5,7 +5,7 @@ import { DatabaseService } from '../database/database.service.js';
 export interface UserRecord {
   email: string;
   name: string;
-  password:string;
+  password: string | null;
   id:number;
 }
 
